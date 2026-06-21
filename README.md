@@ -19,7 +19,7 @@ Open the app and enter any room code (e.g. `frontdoor`, `office`, `myhome`).
 Share the resulting URL with anyone who should hear the bell:
 
 ```
-https://your-app.onrender.com/?room=frontdoor
+https://your-project.glitch.me/?room=frontdoor
 ```
 
 Anyone with the URL can ring or receive. Choose a code that's hard to guess.
@@ -31,16 +31,21 @@ npm install
 npm start
 ```
 
-Open `http://localhost:3000` — enter a room code and share the URL with others on your network.
+Open `http://localhost:3000` — enter a room code and share the URL with others.
 
-## Deploy to Render.com
+## Deploy to Glitch (free, no credit card)
 
-1. Push this repo to GitHub
-2. Go to [render.com](https://render.com) → **New Web Service**
-3. Connect your GitHub repo — Render detects `render.yaml` automatically
-4. Click **Deploy**
+Glitch hosts Node.js apps for free with WebSocket support and a permanent URL.
 
-The service gets a `*.onrender.com` URL with HTTPS and WebSocket (`wss://`) support out of the box.
+1. Go to [glitch.com](https://glitch.com) and sign in (GitHub login works)
+2. Click **New Project** → **Import from GitHub**
+3. Paste your repo URL and click **OK**
+4. Glitch installs dependencies and starts the server automatically
+5. Click **Share** (top right) → copy the live URL (e.g. `https://as-dindon.glitch.me`)
+
+Open the URL → enter a room code → share `https://as-dindon.glitch.me/?room=<your-code>`.
+
+**Note:** Free Glitch projects sleep after ~5 minutes of inactivity. The first request after sleep takes ~20 seconds to wake up — the WebSocket client reconnects automatically. A free [UptimeRobot](https://uptimerobot.com) ping every 4 minutes keeps it awake if needed.
 
 ## Stack
 
@@ -49,4 +54,4 @@ The service gets a `*.onrender.com` URL with HTTPS and WebSocket (`wss://`) supp
 | Server   | Node.js, Express, ws        |
 | Frontend | Plain HTML / Vanilla JS     |
 | Audio    | Web Audio API (programmatic)|
-| Deploy   | Render.com (`render.yaml`)  |
+| Deploy   | Glitch.com (free)           |
