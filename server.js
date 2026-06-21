@@ -12,15 +12,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-wss.on('connection', (ws) => {
-  console.log(`Client connected  (total: ${wss.clients.size})`);
+const rooms = new Map(); // roomCode -> Set<WebSocket>
+
+wss.on('connection', (ws, req) => {
+  const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  const room = new URLSearchParams(qs).get('room') || '';
+
+  if (!room) { ws.close(4000, 'no room'); return; }
+
+  if (!rooms.has(room)) rooms.set(room, new Set());
+  rooms.get(room).add(ws);
+  console.log(`[${room}] connected (${rooms.get(room).size})`);
 
   ws.on('message', (data) => {
     let msg;
     try { msg = JSON.parse(data); } catch { return; }
 
     if (msg.type === 'ring') {
-      for (const client of wss.clients) {
+      for (const client of rooms.get(room)) {
         if (client.readyState === ws.OPEN) {
           client.send(JSON.stringify({ type: 'ring' }));
         }
@@ -29,7 +38,9 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
-    console.log(`Client disconnected (total: ${wss.clients.size})`);
+    const set = rooms.get(room);
+    if (set) { set.delete(ws); if (!set.size) rooms.delete(room); }
+    console.log(`[${room}] disconnected (${rooms.get(room)?.size ?? 0})`);
   });
 });
 
